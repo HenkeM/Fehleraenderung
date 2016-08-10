@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+       xmlns:f="http://java.sun.com/jsf/core"
+       xmlns:ui="http://java.sun.com/jsf/facelets"
+       xmlns:p="http://primefaces.org/ui"
+       xmlns:of="http://omnifaces.org/functions"
+       >
+
+    <h:head>
+
+        <title>Fehlerübersicht</title>
+
+    </h:head>
+
+    <h:body>
+
+
+       <h:form id="form">
+			    <p:dataTable id="singleDT" var="car" value="#{dtFehlerBean.fehlerliste}"  selectionMode="single" selection="#{dtFehlerBean.fehler}" rowKey="#{car.feNr}" paginator="true" rows="10" >
+        <f:facet name="header">
+            Fehlerübersicht
+        </f:facet>
+         
+         <p:column headerText="ProjektNr." style="width:74px" >
+            <h:outputText value="#{car.projekt.getProNr()}" />
+        </p:column>
+        <p:column headerText="FehlerNr." style="width:70px" >
+            <h:outputText value="#{car.feNr}" />
+        </p:column>
+        <p:column headerText="Bezeichnung " >
+            <h:outputText value="#{car.bezeichnung}"/>
+        </p:column>
+        <p:column headerText="Beschreibung " style="text-align: center" >
+            <h:outputText value="#{car.beschreibung}"  />
+        </p:column>
+        <p:column headerText="erstellt am">
+            <h:outputText value="#{of:formatDate(car.erstelltAm, 'yyyy-MM-dd HH:mm:ss')}" /> 
+        </p:column>
+       
+        <p:column headerText="Priorität">
+            <h:outputText value="#{car.prioritaet.getBezeichnung()}" />
+        </p:column>
+        <f:facet name="footer">
+        <p:commandButton  value="Details" ajax="false" action="fehlerdetail.xhtml" icon="ui-icon-pencil"/>
+        </f:facet>    
+  		  </p:dataTable>
+  		  <p:commandButton  value="Home" ajax="false" action="index.xhtml" icon="ui-icon-home" />
+         </h:form>
+
+    </h:body>
+
+</html> 

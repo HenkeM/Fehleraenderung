@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+       xmlns:f="http://java.sun.com/jsf/core"
+       xmlns:ui="http://java.sun.com/jsf/facelets"
+       xmlns:p="http://primefaces.org/ui"
+       xmlns:o="http://omnifaces.org/ui"
+       xmlns:of="http://omnifaces.org/functions"
+        >
+
+<h:head>
+	<title>Fehlerübersicht</title>
+</h:head>
+	
+<h:body style="font-family: Arial">
+    <h:form id="formerr">
+    	<p:growl id="msgs" showDetail="false"/>
+    		<p:panel header="Fehler bearbeiten" style="margin-bottom:10px; font-size:30px">
+		    	<h:panelGrid id="gridp" columns="3" style="margin-bottom:10px; font-size:18px" cellpadding="10">
+			        <h:outputText value="Projektnummer:" />
+			        <h:outputText value="#{dtFehlerBean.projektnummer}" />
+			 		<h:outputText value="" />
+			 		
+			        <h:outputText value="Fehlernummer:" />
+			       	<h:outputText value= "#{dtFehlerBean.fehler.getFeNr()}" />
+			      	<h:outputText value="" />
+			       	
+			       	<h:outputText value="Erstellt von:" />
+			       	<h:outputText value= "#{dtFehlerBean.fehlernutzer.getVorname()} #{dtFehlerBean.fehlernutzer.getName()}" />
+			       	<h:outputText value="" />
+			       	
+			       	<h:outputText value="Erstellt am:" />
+			       	<h:outputText value="#{of:formatDate(dtFehlerBean.erstelltAm, 'yyyy-MM-dd HH:mm:ss')}" /> 
+			      	<h:outputText value="" />
+			      	
+			      	<h:outputText value="Zugewiesen an:" />
+			    	<p:selectOneMenu id="nutzer" value="#{dtFehlerBean.fehlernutzerzugewiesen}" required="true" requiredMessage="Wählen Sie einen Nutzer aus!" converter="omnifaces.SelectItemsConverter" style="width:190px">
+			    			 <p:ajax listener="#{dtFehlerBean.assignChange}" />
+			                <f:selectItem itemLabel="aktueller Bearbeiter: #{dtFehlerBean.fehlernutzerzugewiesen.getVorname()} #{dtFehlerBean.fehlernutzerzugewiesen.getName()}" itemValue="#{dtFehlerBean.fehlernutzerzugewiesen}" noSelectionOption="false" />
+			                <f:selectItems value="#{dtFehlerBean.kommentarnutzerliste}" var="kom" itemLabel="#{kom.getVorname()} #{kom.getName()}"/>
+			         </p:selectOneMenu>
+			         <h:outputText value="" />   
+			            
+			        <h:outputText value="Zugewiesen am:" />    
+			    	<h:outputText id="assignDate" value="#{dtFehlerBean.zugewiesenAmString}" /> 
+			    	<h:outputText value="" />
+			    	
+			    	<h:outputText value="Status" />  
+			    	<p:selectOneMenu id="status" value="#{dtFehlerBean.status}" required="true" requiredMessage="Status setzen" converter="omnifaces.SelectItemsConverter" style="width:190px">
+			                <f:selectItem itemLabel="aktueller Status: #{dtFehlerBean.status.getBezeichnung()}" itemValue="#{dtFehlerBean.status}" noSelectionOption="false" />
+			                <f:selectItems value="#{dtFehlerBean.folgestatusliste}" var="kom" itemLabel="#{kom.getBezeichnung()}"/>
+			            </p:selectOneMenu>
+			    	<h:outputText value="" />
+			    	
+			    	<h:outputText value="Priorität:" /> 
+			    	<p:selectOneMenu id="prio" value="#{dtFehlerBean.prioritaet}" required="true" requiredMessage="Priorität setzen" converter="omnifaces.SelectItemsConverter" style="width:190px">
+			                <f:selectItem itemLabel="aktuelle Priorität: #{dtFehlerBean.prioritaet.getBezeichnung()}" itemValue="#{dtFehlerBean.prioritaet}" noSelectionOption="false" />
+			                <f:selectItems value="#{dtFehlerBean.prioliste}" var="kom" itemLabel="#{kom.getBezeichnung()}"/>
+			            </p:selectOneMenu> 
+			    	<h:outputText value="" />
+			    	
+			    	<h:outputText value="Bezeichnung:" />
+			       	<p:inputTextarea id="bezeichnung" value="#{dtFehlerBean.bezeichnung}" required="true" rows="1" cols="85" counter="display0" maxlength="64" counterTemplate="{0} Zeichen verbleiben" />
+			      	<h:outputText id="display0" />
+			      	
+			      	<h:outputText value="Beschreibung:" />
+			        <p:inputTextarea id="beschreibung" value="#{dtFehlerBean.beschreibung}" required="true" rows="3" cols="85" counter="display1" maxlength="2000" counterTemplate="{0} Zeichen verbleiben"  />
+			       	<h:outputText id="display1" />
+			    	
+			    	<h:outputText value="Verweist auf:" /> 
+			    	<p:pickList id="verweise" value="#{dtFehlerBean.fehlerverweispickliste}" var="entity" itemValue="#{entity}" itemLabel="#{entity.feNr}. #{entity.getBezeichnung()}">
+			    					<o:converter converterId="omnifaces.ListConverter" list="#{dtFehlerBean.nichtfehlerverweisliste}" />
+						</p:pickList> 
+						<p:tooltip id="verweistip" for="verweise" value="Ziehen Sie Fehler, auf die verwiesen werden soll, ins rechte Feld" />
+					<h:outputText value="" />				
+		    	</h:panelGrid>
+		    	<p:commandButton value="Änderungen Speichern" ajax="true" update=":formerr:msgs" actionListener="#{dtFehlerBean.buttonAction}" icon="ui-icon-disk" style="font-size:18px">
+		 			<f:ajax execute="@form" render="@form"/>
+				</p:commandButton>
+	    	</p:panel>
+		</h:form>
+	
+	    <p:separator/>
+	     
+	    <h:form id="formkom">
+	   	<p:growl id="msgse" showDetail="true"/>
+	    <p:panel header="Kommentarübersicht" style="margin-bottom:10px;font-size:30px">
+	    	<h:panelGrid id="gridk" columns="1" style="margin-bottom:10px;font-size:18px" cellpadding="5">      
+		        <p:dataTable id="singleDT" var="car" value="#{dtFehlerBean.kommentarliste}"  editable="true" style="margin-bottom:20px" tableStyle="width:100%" paginator="true" rows="10" >
+			        <f:facet name="header">
+			            Kommentare
+			        </f:facet>
+			        <p:ajax event="rowEdit" listener="#{dtFehlerBean.onRowEdit}" update=":formkom:msgse" />
+			       	<p:ajax event="rowEditCancel" listener="#{dtFehlerBean.onRowCancel}" update=":formkom:msgse"  />
+			        <p:column headerText="Nr." style="width:74px" >
+			        	<h:outputText value="#{car.koNr}" />
+			        </p:column>
+			        
+				    <p:column headerText="Kommentartext"  style="height:100%; width: 50%;white-space: normal">
+				        <p:cellEditor>
+				        	<f:facet name="output"><h:outputText value="#{car.text}"   /></f:facet>
+				            <f:facet name="input"><p:inputTextarea id="modelInput" value="#{car.text}" rows="10" cols="85" /></f:facet>
+				        </p:cellEditor> 
+			        </p:column>
+			  
+			        <p:column headerText="Erstellt von" >
+			            <h:outputText value="#{car.nutzer.getVorname()} #{car.nutzer.getName()}"  />
+			        </p:column>
+			        
+			        <p:column headerText="Erstellt am">
+			            <h:outputText value="#{of:formatDate(car.erstelltAm, 'yyyy-MM-dd HH:mm:ss')}" />            
+			        </p:column>
+			        
+			        <p:column style="width:32px">
+			        	<p:rowEditor />
+			        </p:column>
+				      
+					<f:facet name="footer">
+					</f:facet>    
+				</p:dataTable>
+		
+				<h3 style="margin-bottom:0px">Kommentar verfassen:</h3>
+				<p:inputTextarea id="inputkom" value="#{dtFehlerBean.kommentartext}" rows="10" cols="85" counter="display2" maxlength="2000" counterTemplate="{0} Zeichen verbleiben." autoResize="false" />
+				<h:outputText id="display2" />
+				<br/>
+				<p:commandButton value="Kommentar speichern" ajax="false" update=":formkom:msgs"  action="#{dtFehlerBean.addEmptyKommentar}" icon="ui-icon-comment" style="width:180px;font-size:18px" />
+			</h:panelGrid>
+		</p:panel>
+		<p:commandButton  value="Fehlerübersicht" ajax="false" action="fehleransicht.xhtml" icon="fa fa-backward" style="width:180px"/>
+    </h:form>
+</h:body>
+</html> 
